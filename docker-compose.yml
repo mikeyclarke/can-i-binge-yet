@@ -1,31 +1,23 @@
 services:
-  python:
-    container_name: can-i-binge-yet-python
+  go:
+    container_name: ciby-go
     build:
-      dockerfile: ./docker/python/Dockerfile
       context: ./
-    entrypoint:
-      - poetry
-      - run
-      - gunicorn
-      - '-w'
-      - '2'
-      - '-b'
-      - '0.0.0.0:8000'
-      - '--reload'
-      - 'wsgi:application'
+      dockerfile: ./docker/go/Dockerfile
     depends_on:
       - redis
     ports:
       - 8000:8000
     volumes:
-      - .:/var/ciby
+      - .:/var/app
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ''
+      APP_ENV: 'dev'
 
   redis:
+    container_name: ciby-redis
     image: redis:7.0-alpine
     ports:
       - 6379:6379
@@ -35,12 +27,12 @@ services:
       ALLOW_EMPTY_PASSWORD: 'yes'
 
   node:
-    container_name: can-i-binge-yet-node
+    container_name: ciby-node
     build:
       dockerfile: ./docker/node/Dockerfile
       context: ./
     volumes:
-      - .:/var/ciby
+      - .:/var/app
     tty: true
 
 volumes:

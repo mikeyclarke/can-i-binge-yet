@@ -43,6 +43,24 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: '[name].[contenthash].css',
         }),
+        {
+            apply: (compiler) => {
+                compiler.hooks.afterEmit.tap('AfterEmitPlugin', (compilation) => {
+                    const outputPath = compilation.options.output.path;
+                    if (compilation.entries.has('service-worker')) {
+                        const entry = compilation.entrypoints.get('service-worker');
+                        const chunk = entry.getEntrypointChunk();
+                        chunk.files.forEach((file) => {
+                            const from = outputPath + '/' + file;
+                            const to = path.resolve(__dirname, 'public') + '/' + file.split('/').at(-1);
+                            fs.copyFile(from, to, (err) => {
+                                if (err) throw err;
+                            });
+                        });
+                    }
+                });
+            },
+        },
     ],
     resolve: {
         extensions: ['.ts'],

@@ -4,8 +4,8 @@
     {% if poster_image is not none %}
         <img
             class="poster{% if className is not none %} {{ className }}{% endif %}"
-            src="{{ poster_image.default }}"
-            srcset="{{ poster_image.srcset }}"
+            src="{{ poster_image.Default }}"
+            srcset="{{ poster_image.Srcset }}"
             sizes="{{ sizes }}"
             alt="{% if alt is not none %}{{ alt }}{% endif %}"
         >

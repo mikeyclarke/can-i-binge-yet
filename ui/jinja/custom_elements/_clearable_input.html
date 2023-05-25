@@ -5,8 +5,9 @@
             {% if className is not none %}
                 class="{{ className }}"
             {% endif %}
-            {% for name, value in attrs.items() %}
-                {% if value is none %}
+            {% for name, value in attrs %}
+                {% if name == "value" and value is none %}
+                {% elif value is none %}
                     {{ name }}
                 {% else %}
                     {{ name }}="{{ value }}"

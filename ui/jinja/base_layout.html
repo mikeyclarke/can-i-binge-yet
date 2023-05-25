@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <title>{% if html_title is defined %}{{ html_title }} – {% endif %}Can I Binge Yet?</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        {{ get_asset_html(request(), 'app.css', 'css')|safe }}
+        {{ get_asset_html('app.css', 'css')|safe }}
 
         <link rel="icon" href="/favicon{% if favicon_variant is defined %}-{{ favicon_variant }}{% endif %}.svg" type="image/svg+xml">
         <link rel="icon" href="/favicon-light-mode{% if favicon_variant is defined %}-{{ favicon_variant }}{% endif %}.png" type="image/png" sizes="any">
@@ -16,11 +16,11 @@
 
         {% block content %}{% endblock %}
 
-        {{ get_asset_html(request(), 'app.js', 'js')|safe }}
+        {{ get_asset_html('app.js', 'js')|safe }}
 
-        {% set cacheable_stylesheets = request().param('cacheable_stylesheets') %}
+        {% set cacheable_stylesheets = ctx.Locals('cacheable_stylesheets') %}
         {% if cacheable_stylesheets is mapping %}
-            {% for id, stylesheet in cacheable_stylesheets.items() %}
+            {% for id, stylesheet in cacheable_stylesheets %}
                 <cacheable-asset src="{{ stylesheet.src }}" bundle="{{ stylesheet.bundle }}" element="{{ id }}"></cacheable-asset>
             {% endfor %}
         {% endif %}

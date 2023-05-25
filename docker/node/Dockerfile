@@ -2,7 +2,7 @@ FROM node:19-alpine
 
 RUN corepack enable
 
-WORKDIR /var/ciby
+WORKDIR /var/app
 
 COPY . .
 

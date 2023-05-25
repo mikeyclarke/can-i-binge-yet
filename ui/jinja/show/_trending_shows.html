@@ -6,8 +6,11 @@
     <ul class="trending-shows__list">
         {% for show in trending_shows %}
             <li class="trending-shows__show">
-                <a class="trending-shows__show-link" href="{{ route('front_end.app.show', { 'show_url_path': show.url_path }) }}">
-                    {{ render_poster(show.poster_image, sizes='(min-width: 1080px) 144px, 90px', className='trending-shows__show-poster', alt=show.title) }}
+                {#
+                    <a class="trending-shows__show-link" href="{{ route('front_end.app.show', { 'show_url_path': show.UrlPath }) }}">
+                #}
+                <a class="trending-shows__show-link" href="#">
+                    {{ render_poster(show.PosterImage, '(min-width: 1080px) 144px, 90px', className='trending-shows__show-poster', alt=show.Title) }}
                 </a>
             </li>
         {% endfor %}

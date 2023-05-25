@@ -1,0 +1,38 @@
+testonly: True
+with-expecter: True
+keeptree: False
+
+filename: "mock_{{.InterfaceNameSnake}}.go"
+dir: "{{.InterfaceDir}}"
+mockname: "{{.Mock}}{{.InterfaceName}}"
+outpkg: "{{.PackageName}}"
+inpackage: True
+
+packages:
+  github.com/mikeyclarke/can-i-binge-yet/src/go/asset:
+    interfaces:
+      AssetManifestInterface:
+  github.com/mikeyclarke/can-i-binge-yet/src/go/cache:
+    interfaces:
+      CacheInterface:
+  github.com/mikeyclarke/can-i-binge-yet/src/go/file:
+    interfaces:
+      FileReaderInterface:
+  github.com/mikeyclarke/can-i-binge-yet/src/go/id_generator:
+    interfaces:
+      AlphanumericIdGeneratorInterface:
+  github.com/mikeyclarke/can-i-binge-yet/src/go/show:
+    interfaces:
+      ShowImageFormatterInterface:
+  github.com/mikeyclarke/can-i-binge-yet/src/go/themoviedb:
+    interfaces:
+      TheMovieDbConfigurationInterface:
+      TheMovieDbClientInterface:
+  github.com/mikeyclarke/can-i-binge-yet/src/go/url:
+    interfaces:
+      SlugGeneratorInterface:
+  context:
+    config:
+      dir: "src/go/mocks/{{.PackagePath}}"
+    interfaces:
+      Context:

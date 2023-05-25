@@ -1,12 +1,12 @@
-{% from 'search/_search_input.html' import render_search_input with context %}
-
 {% extends 'base_layout.html' %}
 
 {% block body_element_attributes %}class="l-homepage"{% endblock %}
 
 {% block content %}
 
-{% if config('application.snowfall') is defined and config('application.snowfall') is true %}
+{% from 'search/_search_input.html' import render_search_input with context %}
+
+{% if config.Snowfall %}
     {% include '_snowfall.html' %}
 {% endif %}
 
