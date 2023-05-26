@@ -7,51 +7,34 @@ env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
 jobs:
-  test_python:
-    name: Python tests (Python ${{ matrix.python-versions }})
+  test_go:
+    name: Go tests (Go ${{ matrix.go-versions }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-versions: [3.11.1]
+        go-versions: [1.20.4]
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Python
-        id: setup-python
-        uses: actions/setup-python@v2
+      - name: Setup Go
+        uses: actions/setup-go@v4
         with:
-          python-version: ${{ matrix.python-versions }}
+          go-version: ${{ matrix.go-versions }}
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 1.1.14
-          virtualenvs-create: true
-          virtualenvs-in-project: true
+      - name: Build
+        run: go build -v ./src/go
 
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Run unit tests
+        run: go test -v ./src/go/...
 
-      - name: Install poetry packages
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
+      - name: Vet Go code
+        run: go vet -v ./src/go/...
 
-      - name: Run mypy
-        run: poetry run mypy --strict src/py
-
-      - name: Run flake8
-        run: poetry run flake8 src/py tests/py
-
-      - name: Run bandit
-        run: poetry run bandit -r src/py
-
-      - name: Run Python unit tests
-        run: poetry run pytest tests/py
+      - name: Run staticcheck
+        run: |
+          go install honnef.co/go/tools/cmd/staticcheck@latest
+          staticcheck ./src/go/...
 
   test_typescript:
     name: TypeScript tests (Node ${{ matrix.node-versions }})
