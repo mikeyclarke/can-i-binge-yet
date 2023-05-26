@@ -8,11 +8,6 @@ import (
     "github.com/mikeyclarke/can-i-binge-yet/src/go/themoviedb"
 )
 
-type ShowImageResult struct {
-    Default string
-    Srcset string
-}
-
 type ShowImageFormatter struct {
     tmdbConfig themoviedb.TheMovieDbConfigurationInterface
 }

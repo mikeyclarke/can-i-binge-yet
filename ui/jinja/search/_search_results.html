@@ -1,26 +1,33 @@
 {% from 'show/_poster.html' import render_poster %}
 
+{% macro show_meta(year, countriesEmoji) %}
+    {% set emoji = countriesEmoji|join(' ') %}
+
+    {% if year != 0 and countriesEmoji is not empty %}
+        {{ year ~ ' ' ~ emoji }}
+    {% elif year != 0 %}
+        {{ year }}
+    {% elif countriesEmoji is not empty %}
+        {{ emoji }}
+    {% endif %}
+{% endmacro %}
+
 <div class="search-results">
-    <p class="search-results__results-legend">We found <strong>{{ results.total_results }}</strong> show{% if results.total_results != 1 %}s{% endif %} matching “<strong>{{ search_token }}</strong>”</p>
+    <p class="search-results__results-legend">We found <strong>{{ results.TotalResults }}</strong> show{% if results.TotalResults != 1 %}s{% endif %} matching “<strong>{{ search_token }}</strong>”</p>
 
     <ol class="search-results__results-list">
-        {% for show in results.shows %}
-            {% if show.year is not none and show.countries_emoji|length > 0 %}
-                {% set show_meta = show.year ~ ' ' ~ show.countries_emoji|join(' ') %}
-            {% elif show.year is not none %}
-                {% set show_meta = show.year %}
-            {% elif show.countries_emoji|length > 0 %}
-                {% set show_meta = show.countries_emoji|join(' ') %}
-            {% else %}
-                {% set show_meta = none %}
-            {% endif %}
+        {% for show in results.Shows %}
+            {% set show_meta = show_meta(show.Year, show.CountriesEmoji) %}
 
             <li class="search-results__result">
-                <a class="search-results__result-link" href="{{ route('front_end.app.show', { 'show_url_path': show.url_path }, query_params={ 'return_to': request().get_path_with_query() }) }}">
-                    {{ render_poster(show.poster_image, sizes='70px', className='search-results__result-poster') }}
+                {#
+                    <a class="search-results__result-link" href="{{ route('front_end.app.show', { 'show_url_path': show.UrlPath }, query_params={ 'return_to': request().get_path_with_query() }) }}">
+                #}
+                <a class="search-results__result-link" href="#">
+                    {{ render_poster(show.PosterImage, '70px', className='search-results__result-poster') }}
                     <div class="search-results__result-info">
-                        <h2 class="search-results__result-title">{{ show.title }}</h2>
-                        {% if show_meta is not none %}
+                        <h2 class="search-results__result-title">{{ show.Title }}</h2>
+                        {% if show_meta is not none and show_meta is not empty %}
                             <span class="search-results__result-meta">{{ show_meta }}</span>
                         {% endif %}
                     </div>

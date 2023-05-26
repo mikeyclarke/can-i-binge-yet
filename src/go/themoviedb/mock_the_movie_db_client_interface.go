@@ -100,6 +100,49 @@ func (_c *MockTheMovieDbClientInterface_GetTrendingShows_Call) RunAndReturn(run 
 	return _c
 }
 
+// SearchShows provides a mock function with given fields: searchToken, page
+func (_m *MockTheMovieDbClientInterface) SearchShows(searchToken string, page int) ApiSearchShowsResult {
+	ret := _m.Called(searchToken, page)
+
+	var r0 ApiSearchShowsResult
+	if rf, ok := ret.Get(0).(func(string, int) ApiSearchShowsResult); ok {
+		r0 = rf(searchToken, page)
+	} else {
+		r0 = ret.Get(0).(ApiSearchShowsResult)
+	}
+
+	return r0
+}
+
+// MockTheMovieDbClientInterface_SearchShows_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SearchShows'
+type MockTheMovieDbClientInterface_SearchShows_Call struct {
+	*mock.Call
+}
+
+// SearchShows is a helper method to define mock.On call
+//   - searchToken string
+//   - page int
+func (_e *MockTheMovieDbClientInterface_Expecter) SearchShows(searchToken interface{}, page interface{}) *MockTheMovieDbClientInterface_SearchShows_Call {
+	return &MockTheMovieDbClientInterface_SearchShows_Call{Call: _e.mock.On("SearchShows", searchToken, page)}
+}
+
+func (_c *MockTheMovieDbClientInterface_SearchShows_Call) Run(run func(searchToken string, page int)) *MockTheMovieDbClientInterface_SearchShows_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string), args[1].(int))
+	})
+	return _c
+}
+
+func (_c *MockTheMovieDbClientInterface_SearchShows_Call) Return(_a0 ApiSearchShowsResult) *MockTheMovieDbClientInterface_SearchShows_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockTheMovieDbClientInterface_SearchShows_Call) RunAndReturn(run func(string, int) ApiSearchShowsResult) *MockTheMovieDbClientInterface_SearchShows_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 type mockConstructorTestingTNewMockTheMovieDbClientInterface interface {
 	mock.TestingT
 	Cleanup(func())

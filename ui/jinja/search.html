@@ -1,10 +1,10 @@
-{% from 'search/_search_input.html' import render_search_input with context %}
-
 {% extends 'base_layout.html' %}
 
 {% block body_element_attributes %}class="l-search-results"{% endblock %}
 
 {% block content %}
+
+{% from 'search/_search_input.html' import render_search_input with context %}
 
 <div class="l-search-results__top-bar">
     {% include '_top_bar.html' %}
@@ -15,7 +15,7 @@
 </div>
 
 <div class="l-search-results__search-results">
-    {% if search_token is not none and results.total_results > 0 %}
+    {% if search_token is not none and results.TotalResults > 0 %}
         {% include 'search/_search_results.html' %}
     {% elif search_token is not none %}
         <p>No results found</p>

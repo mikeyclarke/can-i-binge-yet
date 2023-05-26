@@ -1,6 +1,6 @@
-{% set fallback_images = ['92w', '154w', '185w', '342w', '500w', '780w'] %}
-
 {% macro render_poster(poster_image, sizes, className = none, alt = none, show_placeholder_fallback = true) %}
+    {% set fallback_images = ['92w', '154w', '185w', '342w', '500w', '780w'] %}
+
     {% if poster_image is not none %}
         <img
             class="poster{% if className is not none %} {{ className }}{% endif %}"

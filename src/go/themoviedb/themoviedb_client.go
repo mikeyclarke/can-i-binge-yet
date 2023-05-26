@@ -39,6 +39,16 @@ func (tmdbClient *TheMovieDbClient) GetTrendingShows(timeWindow string) ApiTrend
     return result
 }
 
+func (tmdbClient *TheMovieDbClient) SearchShows(searchToken string, page int) ApiSearchShowsResult {
+    if page == 0 {
+        page = 1
+    }
+
+    var result ApiSearchShowsResult
+    tmdbClient.makeRequest("/3/search/tv", map[string]string{"query": searchToken}, &result)
+    return result
+}
+
 func (tmdbClient *TheMovieDbClient) makeRequest(endpoint string, params map[string]string, result any) {
     requestParams := url.Values{}
     for key, val := range params {

@@ -34,15 +34,16 @@ func CreateHomeController() *controllers.HomeController {
 	redisPort := applicationConfig.RedisPort
 	redisPassword := applicationConfig.RedisPassword
 	cacheCache := NewRedisCache(redisHost, redisPort, redisPassword)
-	cache2 := cache.NewCache(cacheCache)
 	tmdbApiKey := applicationConfig.TmdbApiKey
 	tmdbApiBaseUrl := applicationConfig.TmdbApiBaseUrl
 	theMovieDbClient := themoviedb.NewTheMovieDbClient(tmdbApiKey, tmdbApiBaseUrl)
 	theMovieDbConfiguration := themoviedb.NewTheMovieDbConfiguration(cacheCache, theMovieDbClient)
 	showImageFormatter := show.NewShowImageFormatter(theMovieDbConfiguration)
 	slugGenerator := url.NewSlugGenerator()
+	showSearch := show.NewShowSearch(showImageFormatter, slugGenerator, theMovieDbClient)
+	cache2 := cache.NewCache(cacheCache)
 	trendingShows := show.NewTrendingShows(cache2, showImageFormatter, slugGenerator, theMovieDbClient)
-	homeController := controllers.NewHomeController(trendingShows)
+	homeController := controllers.NewHomeController(showSearch, trendingShows)
 	return homeController
 }
 

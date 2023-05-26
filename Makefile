@@ -65,7 +65,7 @@ staticcheck: ## Check that go code passes checks
 ## ---------
 
 gotest: ## Run go unit tests
-	docker compose run --rm -w /var/app/src/go go go test ./...
+	docker exec -it -w /var/app/src/go ciby-go go test ./...
 
 jest: ## Run TypeScript unit tests
 	docker exec -it can-i-binge-yet-node yarn run jest --verbose --silent=false $(TEST_REGEXP)

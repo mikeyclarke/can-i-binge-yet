@@ -68,6 +68,7 @@ func CreateHomeController() *controllers.HomeController {
         wire.Bind(new(show.ShowImageFormatterInterface), new(*show.ShowImageFormatter)),
         show.NewShowImageFormatter,
         show.NewTrendingShows,
+        show.NewShowSearch,
         controllers.NewHomeController,
     ))
 }
