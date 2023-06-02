@@ -11,6 +11,7 @@ type ApiConfigurationResult struct {
 }
 
 type ApiTrendingShowResult struct {
+    Adult bool `json:"adult"`
     Id int `json:"id"`
     Name string `json:"name"`
     PosterPath *string `json:"poster_path"`

@@ -71,6 +71,10 @@ func (trendingShows *TrendingShows) formatResults(
     formatted := []TrendingShowResult{}
 
     for _, result := range shows.Results {
+        if result.Adult {
+            continue
+        }
+
         id := result.Id
         slug := trendingShows.slugGenerator.Generate(result.Name, 0)
         urlPath := fmt.Sprintf("%d-%s", id, slug)

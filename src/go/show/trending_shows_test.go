@@ -22,16 +22,25 @@ func TestGetAllWithPopulatedCache(t *testing.T) {
 
     sandmanPosterPath := "/q54qEgagGOYCq5D1903eBVMNkbo.jpg"
     strangerThingsPosterPath := "/49WJfeN0moxb9IPfGn8AIqMGskD.jpg"
+    adultShowPosterPath := "/tg7jksahekowl.jpg"
     apiResults := []themoviedb.ApiTrendingShowResult{
         themoviedb.ApiTrendingShowResult{
+            Adult: false,
             Id: 90802,
             Name: "The Sandman",
             PosterPath: &sandmanPosterPath,
         },
         themoviedb.ApiTrendingShowResult{
+            Adult: false,
             Id: 66732,
             Name: "Stranger Things",
             PosterPath: &strangerThingsPosterPath,
+        },
+        themoviedb.ApiTrendingShowResult{
+            Adult: true,
+            Id: 78434,
+            Name: "Some Adult Show",
+            PosterPath: &adultShowPosterPath,
         },
     }
 
@@ -85,16 +94,25 @@ func TestGetAllWithEmptyCache(t *testing.T) {
 
     sandmanPosterPath := "/q54qEgagGOYCq5D1903eBVMNkbo.jpg"
     strangerThingsPosterPath := "/49WJfeN0moxb9IPfGn8AIqMGskD.jpg"
+    adultShowPosterPath := "/tg7jksahekowl.jpg"
     apiResults := []themoviedb.ApiTrendingShowResult{
         themoviedb.ApiTrendingShowResult{
+            Adult: false,
             Id: 90802,
             Name: "The Sandman",
             PosterPath: &sandmanPosterPath,
         },
         themoviedb.ApiTrendingShowResult{
+            Adult: false,
             Id: 66732,
             Name: "Stranger Things",
             PosterPath: &strangerThingsPosterPath,
+        },
+        themoviedb.ApiTrendingShowResult{
+            Adult: true,
+            Id: 78434,
+            Name: "Some Adult Show",
+            PosterPath: &adultShowPosterPath,
         },
     }
     apiResult := themoviedb.ApiTrendingShowsResult{
