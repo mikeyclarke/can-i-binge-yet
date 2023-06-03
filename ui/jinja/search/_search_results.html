@@ -19,7 +19,7 @@
         {% for show in results.Shows %}
             {% set show_meta = show_meta(show.Year, show.CountriesEmoji) %}
             {% set path = route('front_end.app.show', { 'show_url_path': show.UrlPath }) %}
-            {% set encodedReturnPath = request_context.OriginalURL()|urlencode %}
+            {% set encodedReturnPath = ctx.OriginalURL()|urlencode %}
             {% set resultLink = path ~ '?return_to=' ~ encodedReturnPath %}
 
             <li class="search-results__result">

@@ -2,7 +2,6 @@ package template
 
 import (
     "errors"
-    "fmt"
     "io"
     "io/fs"
     "log"
@@ -123,15 +122,36 @@ func (templateRenderer *TemplateRenderer) populateViewContext(data interface{}) 
         return viewContext, errors.New(message)
     }
 
-    viewContext["request_context"] = ctx
-    viewContext["get_asset_html"] = func(va *exec.VarArgs) *exec.Value {
-        filename := va.Args[0].String()
-        assetType := va.Args[1].String()
+    viewContext["get_asset_html"] = BuildAssetFunction(templateRenderer.assetRenderer, ctx)
+    viewContext["route"] = BuildRouteFunc(ctx)
 
-        result := templateRenderer.assetRenderer.GetAssetHtml(ctx, filename, assetType)
+    return viewContext, nil
+}
+
+type GonjaFunc func(*exec.VarArgs) *exec.Value
+
+func BuildAssetFunction(assetRenderer *asset.AssetRenderer, ctx *fiber.Ctx) GonjaFunc {
+    return func(va *exec.VarArgs) *exec.Value {
+        args := va.ExpectArgs(2)
+
+        if !args.Args[0].IsString() {
+            return exec.AsValue(errors.New("first argument to “get_asset_html” function should be a string"))
+        }
+
+        if !args.Args[1].IsString() {
+            return exec.AsValue(errors.New("second argument to “get_asset_html” function should be a string"))
+        }
+
+        filename := args.Args[0].String()
+        assetType := args.Args[1].String()
+
+        result := assetRenderer.GetAssetHtml(ctx, filename, assetType)
         return exec.AsSafeValue(result)
     }
-    viewContext["route"] = func(va *exec.VarArgs) *exec.Value {
+}
+
+func BuildRouteFunc(ctx *fiber.Ctx) GonjaFunc {
+    return func(va *exec.VarArgs) *exec.Value {
         routeName := va.Args[0].String()
         routeParameters := make(map[string]interface{})
         if len(va.Args) == 2 {
@@ -153,33 +173,6 @@ func (templateRenderer *TemplateRenderer) populateViewContext(data interface{}) 
         if err != nil {
             return exec.AsValue(err)
         }
-        return exec.AsSafeValue(result)
+        return exec.AsValue(result)
     }
-    viewContext["icon"] = func(va *exec.VarArgs) *exec.Value {
-        name := va.Args[0].String()
-        className := va.Args[1].String()
-
-        var label string
-        if len(va.Args) == 3 {
-            label = va.Args[2].String()
-        }
-
-        var ariaAttribute string
-        if label == "" {
-            ariaAttribute = "aria-hidden=\"true\""
-        } else {
-            ariaAttribute = fmt.Sprintf("aria-label=\"%s\"", label)
-        }
-
-        result := fmt.Sprintf(
-            "<svg class=\"%s\" %s><use xlink:href=\"#icon-sprite__%s\"/></svg>",
-            className,
-            ariaAttribute,
-            name,
-        )
-        return exec.AsSafeValue(result)
-    }
-    viewContext["config"] = templateRenderer.applicationConfig
-
-    return viewContext, nil
 }

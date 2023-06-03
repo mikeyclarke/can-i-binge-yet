@@ -27,7 +27,11 @@ import (
     "github.com/mikeyclarke/can-i-binge-yet/src/go/front_end/app/middleware"
 )
 
-func NewGonjaEnvironment(rootDir config.TemplatesDirectory) *gonja.Environment {
+func NewGonjaEnvironment(
+    rootDir config.TemplatesDirectory,
+    snowfall config.Snowfall,
+    searchInputPlaceholderExample config.SearchInputPlaceholderExample,
+) *gonja.Environment {
     loader := gonjaLoaders.MustNewFileSystemLoader(string(rootDir))
     environment := gonja.NewEnvironment(gonjaConfig.DefaultConfig, loader)
     evalLoader := template.NewGonjaCachedEvalTemplateLoader(environment)
@@ -36,6 +40,10 @@ func NewGonjaEnvironment(rootDir config.TemplatesDirectory) *gonja.Environment {
         environment.Filters.Register(name, filterFunc)
     }
     environment.Globals.Merge(template.Functions)
+    environment.Globals.Set("config", map[string]interface{}{
+        "search_input_placeholder_example": searchInputPlaceholderExample,
+        "snowfall": snowfall,
+    })
     return environment
 }
 
@@ -60,6 +68,8 @@ var ConfigSet = wire.NewSet(
         "RedisHost",
         "RedisPort",
         "RedisPassword",
+        "SearchInputPlaceholderExample",
+        "Snowfall",
         "TemplatesDirectory",
         "TmdbApiBaseUrl",
         "TmdbApiKey",

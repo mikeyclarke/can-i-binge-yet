@@ -69,7 +69,9 @@ func CreateSeasonEpisodesController() *controllers2.SeasonEpisodesController {
 	alphanumericIdGenerator := id_generator.NewAlphanumericIdGenerator()
 	assetRenderer := asset.NewAssetRenderer(assetDirectory, assetManifest, fileReader, alphanumericIdGenerator)
 	templatesDirectory := applicationConfig.TemplatesDirectory
-	environment := NewGonjaEnvironment(templatesDirectory)
+	snowfall := applicationConfig.Snowfall
+	searchInputPlaceholderExample := applicationConfig.SearchInputPlaceholderExample
+	environment := NewGonjaEnvironment(templatesDirectory, snowfall, searchInputPlaceholderExample)
 	templateRenderer := template.NewTemplateRenderer(applicationConfig, assetRenderer, environment, templatesDirectory)
 	seasonEpisodesController := controllers2.NewSeasonEpisodesController(seasonEpisodesLoader, templateRenderer)
 	return seasonEpisodesController
@@ -104,14 +106,20 @@ func CreateTemplateRenderer() *template.TemplateRenderer {
 	alphanumericIdGenerator := id_generator.NewAlphanumericIdGenerator()
 	assetRenderer := asset.NewAssetRenderer(assetDirectory, assetManifest, fileReader, alphanumericIdGenerator)
 	templatesDirectory := applicationConfig.TemplatesDirectory
-	environment := NewGonjaEnvironment(templatesDirectory)
+	snowfall := applicationConfig.Snowfall
+	searchInputPlaceholderExample := applicationConfig.SearchInputPlaceholderExample
+	environment := NewGonjaEnvironment(templatesDirectory, snowfall, searchInputPlaceholderExample)
 	templateRenderer := template.NewTemplateRenderer(applicationConfig, assetRenderer, environment, templatesDirectory)
 	return templateRenderer
 }
 
 // container.go:
 
-func NewGonjaEnvironment(rootDir config.TemplatesDirectory) *gonja.Environment {
+func NewGonjaEnvironment(
+	rootDir config.TemplatesDirectory,
+	snowfall config.Snowfall,
+	searchInputPlaceholderExample config.SearchInputPlaceholderExample,
+) *gonja.Environment {
 	loader := loaders.MustNewFileSystemLoader(string(rootDir))
 	environment := gonja.NewEnvironment(config2.DefaultConfig, loader)
 	evalLoader := template.NewGonjaCachedEvalTemplateLoader(environment)
@@ -120,6 +128,10 @@ func NewGonjaEnvironment(rootDir config.TemplatesDirectory) *gonja.Environment {
 		environment.Filters.Register(name, filterFunc)
 	}
 	environment.Globals.Merge(template.Functions)
+	environment.Globals.Set("config", map[string]interface{}{
+		"search_input_placeholder_example": searchInputPlaceholderExample,
+		"snowfall":                         snowfall,
+	})
 	return environment
 }
 
@@ -142,6 +154,8 @@ var ConfigSet = wire.NewSet(config.NewApplicationConfig, wire.FieldsOf(
 	"RedisHost",
 	"RedisPort",
 	"RedisPassword",
+	"SearchInputPlaceholderExample",
+	"Snowfall",
 	"TemplatesDirectory",
 	"TmdbApiBaseUrl",
 	"TmdbApiKey",
