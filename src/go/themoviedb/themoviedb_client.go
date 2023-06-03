@@ -24,32 +24,44 @@ func NewTheMovieDbClient(apiKey config.TmdbApiKey, baseUrl config.TmdbApiBaseUrl
     return &TheMovieDbClient{apiKey, baseUrl, httpClient}
 }
 
-func (tmdbClient *TheMovieDbClient) GetConfiguration() ApiConfigurationResult {
+func (tmdbClient *TheMovieDbClient) GetConfiguration() (ApiConfigurationResult, error) {
     var result ApiConfigurationResult
-    tmdbClient.makeRequest("/3/configuration", map[string]string{}, &result)
-    return result
+    err := tmdbClient.makeRequest("/3/configuration", map[string]string{}, &result)
+    return result, err
 }
 
-func (tmdbClient *TheMovieDbClient) GetTrendingShows(timeWindow string) ApiTrendingShowsResult {
+func (tmdbClient *TheMovieDbClient) GetTrendingShows(timeWindow string) (ApiTrendingShowsResult, error) {
     if timeWindow == "" {
         timeWindow = "day"
     }
     var result ApiTrendingShowsResult
-    tmdbClient.makeRequest(fmt.Sprintf("/3/trending/tv/%s", timeWindow), map[string]string{}, &result)
-    return result
+    err := tmdbClient.makeRequest(fmt.Sprintf("/3/trending/tv/%s", timeWindow), map[string]string{}, &result)
+    return result, err
 }
 
-func (tmdbClient *TheMovieDbClient) SearchShows(searchToken string, page int) ApiSearchShowsResult {
+func (tmdbClient *TheMovieDbClient) SearchShows(searchToken string, page int) (ApiSearchShowsResult, error) {
     if page == 0 {
         page = 1
     }
 
     var result ApiSearchShowsResult
-    tmdbClient.makeRequest("/3/search/tv", map[string]string{"query": searchToken}, &result)
-    return result
+    err := tmdbClient.makeRequest("/3/search/tv", map[string]string{"query": searchToken}, &result)
+    return result, err
 }
 
-func (tmdbClient *TheMovieDbClient) makeRequest(endpoint string, params map[string]string, result any) {
+func (tmdbClient *TheMovieDbClient) GetShow(id int) (ApiShowResult, error) {
+    var result ApiShowResult
+    err := tmdbClient.makeRequest(fmt.Sprintf("/3/tv/%d", id), map[string]string{}, &result)
+    return result, err
+}
+
+func (tmdbClient *TheMovieDbClient) GetShowSeason(id int, seasonNumber int) (ApiSeasonResult, error) {
+    var result ApiSeasonResult
+    err := tmdbClient.makeRequest(fmt.Sprintf("/3/tv/%d/season/%d", id, seasonNumber), map[string]string{}, &result)
+    return result, err
+}
+
+func (tmdbClient *TheMovieDbClient) makeRequest(endpoint string, params map[string]string, result any) error {
     requestParams := url.Values{}
     for key, val := range params {
         requestParams.Add(key, val)
@@ -60,18 +72,27 @@ func (tmdbClient *TheMovieDbClient) makeRequest(endpoint string, params map[stri
     requestUrl := fmt.Sprintf("%s%s?%s", string(tmdbClient.baseUrl), endpoint, requestParams.Encode())
     response, err := tmdbClient.httpClient.Get(requestUrl)
     if err != nil {
-        panic(err)
+        return err
     }
 
     body, err := io.ReadAll(response.Body)
     response.Body.Close()
 
-    if response.StatusCode < 200 || response.StatusCode > 299 || err != nil {
+    if err != nil {
         panic(err)
+    }
+
+    if response.StatusCode < 200 || response.StatusCode > 299 {
+        return &TheMovieDbClientResponseError{
+            response.Status,
+            response.StatusCode,
+        }
     }
 
     err = json.Unmarshal(body, &result)
     if err != nil {
-        panic(err)
+        return err
     }
+
+    return nil
 }

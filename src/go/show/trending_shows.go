@@ -56,7 +56,11 @@ func (trendingShows *TrendingShows) getResults(ctx context.Context) themoviedb.A
         return shows
     }
 
-    shows = trendingShows.tmdbClient.GetTrendingShows("")
+    shows, err = trendingShows.tmdbClient.GetTrendingShows("")
+    if err != nil {
+        panic(err)
+    }
+
     if err = trendingShows.cache.Set(ctx, CacheKey, shows, CacheLifetime); err != nil {
         panic(err)
     }

@@ -48,7 +48,10 @@ func (showSearch *ShowSearch) Search(ctx context.Context, searchToken string, pa
         page = 1
     }
 
-    shows := showSearch.tmdbClient.SearchShows(searchToken, page)
+    shows, err := showSearch.tmdbClient.SearchShows(searchToken, page)
+    if err != nil {
+        panic(err)
+    }
     return showSearch.formatResults(ctx, shows)
 }
 

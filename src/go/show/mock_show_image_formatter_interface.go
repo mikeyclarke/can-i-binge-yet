@@ -66,6 +66,50 @@ func (_c *MockShowImageFormatterInterface_Format_Call) RunAndReturn(run func(con
 	return _c
 }
 
+// FormatUrl provides a mock function with given fields: ctx, imagePath, size
+func (_m *MockShowImageFormatterInterface) FormatUrl(ctx context.Context, imagePath string, size string) string {
+	ret := _m.Called(ctx, imagePath, size)
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) string); ok {
+		r0 = rf(ctx, imagePath, size)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	return r0
+}
+
+// MockShowImageFormatterInterface_FormatUrl_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FormatUrl'
+type MockShowImageFormatterInterface_FormatUrl_Call struct {
+	*mock.Call
+}
+
+// FormatUrl is a helper method to define mock.On call
+//   - ctx context.Context
+//   - imagePath string
+//   - size string
+func (_e *MockShowImageFormatterInterface_Expecter) FormatUrl(ctx interface{}, imagePath interface{}, size interface{}) *MockShowImageFormatterInterface_FormatUrl_Call {
+	return &MockShowImageFormatterInterface_FormatUrl_Call{Call: _e.mock.On("FormatUrl", ctx, imagePath, size)}
+}
+
+func (_c *MockShowImageFormatterInterface_FormatUrl_Call) Run(run func(ctx context.Context, imagePath string, size string)) *MockShowImageFormatterInterface_FormatUrl_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string), args[2].(string))
+	})
+	return _c
+}
+
+func (_c *MockShowImageFormatterInterface_FormatUrl_Call) Return(_a0 string) *MockShowImageFormatterInterface_FormatUrl_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockShowImageFormatterInterface_FormatUrl_Call) RunAndReturn(run func(context.Context, string, string) string) *MockShowImageFormatterInterface_FormatUrl_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 type mockConstructorTestingTNewMockShowImageFormatterInterface interface {
 	mock.TestingT
 	Cleanup(func())

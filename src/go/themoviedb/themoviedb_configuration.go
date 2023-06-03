@@ -4,7 +4,7 @@ import (
     "context"
     "time"
 
-    "github.com/go-redis/cache/v8"
+    "github.com/mikeyclarke/can-i-binge-yet/src/go/cache"
 )
 
 const (
@@ -13,11 +13,11 @@ const (
 )
 
 type TheMovieDbConfiguration struct {
-    cache *cache.Cache
+    cache cache.CacheInterface
     client *TheMovieDbClient
 }
 
-func NewTheMovieDbConfiguration(cache *cache.Cache, tmdbClient *TheMovieDbClient) *TheMovieDbConfiguration {
+func NewTheMovieDbConfiguration(cache cache.CacheInterface, tmdbClient *TheMovieDbClient) *TheMovieDbConfiguration {
     return &TheMovieDbConfiguration{cache, tmdbClient}
 }
 
@@ -42,22 +42,21 @@ func (tmdbConfiguration *TheMovieDbConfiguration) GetImageSizes(ctx context.Cont
 func (tmdbConfiguration *TheMovieDbConfiguration) getConfiguration(ctx context.Context) ApiConfigurationResult {
     var config ApiConfigurationResult
 
-    err := tmdbConfiguration.cache.Get(ctx, CacheKey, &config)
-    if err == nil {
-        return config
-    }
-
-    if err != cache.ErrCacheMiss {
+    exists, err := tmdbConfiguration.cache.Get(ctx, CacheKey, &config)
+    if err != nil {
         panic(err)
     }
 
-    config = tmdbConfiguration.client.GetConfiguration()
-    if err = tmdbConfiguration.cache.Set(&cache.Item{
-        Ctx: ctx,
-        Key: CacheKey,
-        Value: config,
-        TTL: CacheLifetime,
-    }); err != nil {
+    if exists {
+        return config
+    }
+
+    config, err = tmdbConfiguration.client.GetConfiguration()
+    if err != nil {
+        panic(err)
+    }
+
+    if err = tmdbConfiguration.cache.Set(ctx, CacheKey, config, CacheLifetime); err != nil {
         panic(err)
     }
 

@@ -18,12 +18,12 @@
     <ol class="search-results__results-list">
         {% for show in results.Shows %}
             {% set show_meta = show_meta(show.Year, show.CountriesEmoji) %}
+            {% set path = route('front_end.app.show', { 'show_url_path': show.UrlPath }) %}
+            {% set encodedReturnPath = request_context.OriginalURL()|urlencode %}
+            {% set resultLink = path ~ '?return_to=' ~ encodedReturnPath %}
 
             <li class="search-results__result">
-                {#
-                    <a class="search-results__result-link" href="{{ route('front_end.app.show', { 'show_url_path': show.UrlPath }, query_params={ 'return_to': request().get_path_with_query() }) }}">
-                #}
-                <a class="search-results__result-link" href="#">
+                <a class="search-results__result-link" href="{{ resultLink }}">
                     {{ render_poster(show.PosterImage, '70px', className='search-results__result-poster') }}
                     <div class="search-results__result-info">
                         <h2 class="search-results__result-title">{{ show.Title }}</h2>

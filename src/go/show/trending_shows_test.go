@@ -130,7 +130,7 @@ func TestGetAllWithEmptyCache(t *testing.T) {
     }
 
     cache.On("Get", ctx, CacheKey, mock.AnythingOfType("*themoviedb.ApiTrendingShowsResult")).Return(false, nil)
-    tmdbClient.On("GetTrendingShows", "").Return(apiResult)
+    tmdbClient.On("GetTrendingShows", "").Return(apiResult, nil)
     cache.On("Set", ctx, CacheKey, apiResult, CacheLifetime).Return(nil)
     slugGenerator.On("Generate", apiResults[0].Name, 0).Return("the-sandman")
     slugGenerator.On("Generate", apiResults[1].Name, 0).Return("stranger-things")

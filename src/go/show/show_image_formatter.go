@@ -51,3 +51,8 @@ func (formatter *ShowImageFormatter) Format(
 
     return ShowImageResult{defaultSrc, strings.Join(srcsets, ", ")}
 }
+
+func (formatter *ShowImageFormatter) FormatUrl(ctx context.Context, imagePath string, size string) string {
+    imagesBaseUrl := formatter.tmdbConfig.GetImageBaseUrl(ctx)
+    return fmt.Sprintf("%s%s%s", imagesBaseUrl, size, imagePath)
+}

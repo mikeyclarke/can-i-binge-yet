@@ -13,16 +13,16 @@ build_docker_image:
 ## ---------
 
 create_containers: ## Create docker containers
-	docker-compose up -d
+	docker compose up -d
 
 destroy_containers: ## Destroy docker containers
-	docker-compose down
+	docker compose down
 
 start_containers: ## Start docker containers
-	docker-compose start
+	docker compose start
 
 stop_containers: ## Stop docker containers
-	docker-compose stop
+	docker compose stop
 
 container_shell: ## Open an interactive shell in the main Go container
 	docker exec -it ciby-go /bin/sh
@@ -51,24 +51,24 @@ lint_go: staticcheck vet
 ## ---------
 
 vet: ## Vet go code
-	docker exec -it -w /var/app/src/go ciby-go go vet ./...
+	docker exec -it ciby-go go vet ./src/go/...
 
 ## ---------
 ##	Static analysis
 ## ---------
 
 staticcheck: ## Check that go code passes checks
-	docker exec -it -w /var/app/src/go ciby-go staticcheck ./...
+	docker exec -it ciby-go staticcheck ./src/go/...
 
 ## ---------
 ##	Unit tests
 ## ---------
 
 gotest: ## Run go unit tests
-	docker exec -it -w /var/app/src/go ciby-go go test ./...
+	docker exec -it ciby-go go test ./src/go/...
 
 jest: ## Run TypeScript unit tests
-	docker exec -it can-i-binge-yet-node yarn run jest --verbose --silent=false $(TEST_REGEXP)
+	docker exec -it ciby-node yarn run jest --verbose --silent=false $(TEST_REGEXP)
 
 ## ---------
 ##	Dependencies

@@ -1,13 +1,13 @@
 <ol class="inset-icon-list">
-    {% for episode in season.episodes %}
-        {% set icon_suffix = '' if episode.has_aired else '--muted' %}
-        {% set label = 'This episode has aired' if episode.has_aired else 'Unaired episode' %}
+    {% for episode in season.Episodes %}
+        {% set icon_suffix = episode.HasAired|ifelse('', '--muted') %}
+        {% set label = episode.HasAired|ifelse('This episode has aired', 'Unaired episode') %}
 
         <li class="inset-icon-list__item">
-            {{ icon('television', 'inset-icon-list__item-icon' + icon_suffix, label) }}
+            {{ icon('television', 'inset-icon-list__item-icon' ~ icon_suffix, label) }}
             <div>
-                <h4 class="inset-icon-list__item-title">{{ episode.name }} <span class="inset-icon-list__item-title-counter">(#{{ episode.number }})</span></h4>
-                <p class="inset-icon-list__item-description">{% if episode.air_date is none or episode.air_date == '' %}Air date TBD{% else %}{{ episode.air_date|format_date() }}{% endif %}</p>
+                <h4 class="inset-icon-list__item-title">{{ episode.Name }} <span class="inset-icon-list__item-title-counter">(#{{ episode.Number }})</span></h4>
+                <p class="inset-icon-list__item-description">{% if episode.AirDate is none %}Air date TBD{% else %}{{ episode.AirDate|format_date }}{% endif %}</p>
             </div>
         </li>
     {% endfor %}

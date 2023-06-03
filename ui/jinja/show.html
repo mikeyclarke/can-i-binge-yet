@@ -1,7 +1,4 @@
-{% from 'show/_backdrop.html' import render_backdrop %}
-{% from 'show/_poster.html' import render_poster %}
-
-{% if show.is_bingeable %}
+{% if show.IsBingeable %}
     {% set favicon_variant = 'bingeable' %}
 {% endif %}
 
@@ -11,62 +8,57 @@
 
 {% block content %}
 
-<div class="l-show-detail__top-bar{% if show.backdrop_image is not none %} has-backdrop{% endif %}">
+{% from 'show/_backdrop.html' import render_backdrop %}
+{% from 'show/_poster.html' import render_poster %}
+
+<div class="l-show-detail__top-bar{% if show.BackdropImage is not none %} has-backdrop{% endif %}">
     {% include '_top_bar.html' %}
 </div>
 
-<header class="l-show-detail__header feature-header{% if show.poster_image is not none %} has-poster{% endif %}{% if show.backdrop_image is not none %} has-backdrop{% endif %}">
-    {% set back_url = return_to_url(request(), route('front_end.app.home')) %}
+<header class="l-show-detail__header feature-header{% if show.PosterImage is not none %} has-poster{% endif %}{% if show.BackdropImage is not none %} has-backdrop{% endif %}">
+    {% set back_url = return_to_url(ctx, route('front_end.app.home')) %}
     <a class="feature-header__back-button" href="{{ back_url }}" aria-label="Back">{{ icon('back-arrow', 'feature-header__back-button-icon') }}</a>
 
-    {% if show.backdrop_image is not none %}
+    {% if show.BackdropImage is not none %}
         <div class="feature-header__backdrop-wrap">
-            {{ render_backdrop(show.backdrop_image, sizes='100vw', className='feature-header__backdrop-image', alt='') }}
+            {{ render_backdrop(show.BackdropImage, '100vw', className='feature-header__backdrop-image', alt='') }}
         </div>
     {% endif %}
 
     <div class="feature-header__details-wrap">
-        {% if show.poster_image is not none %}
-            {{ render_poster(show.poster_image, sizes='(min-width: 824px) 126px, (min-width: 348px) 102px, 70px', className='feature-header__poster', alt='') }}
+        {% if show.PosterImage is not none %}
+            {{ render_poster(show.PosterImage, '(min-width: 824px) 126px, (min-width: 348px) 102px, 70px', className='feature-header__poster', alt='') }}
         {% endif %}
 
         <div>
-            <h1 class="feature-header__title">{{ show.title }}</h1>
+            <h1 class="feature-header__title">{{ show.Title }}</h1>
 
-            {% if show.tagline is not none %}
-                <p class="feature-header__subtitle">{{ show.tagline }}</p>
+            {% if show.Tagline is not none %}
+                <p class="feature-header__subtitle">{{ show.Tagline }}</p>
             {% endif %}
         </div>
     </div>
 </header>
 
 <div class="l-show-detail__body">
-    {% set show_meta = [] %}
-    {% if show.air_dates_display is not none %}
-        {% do show_meta.append(show.air_dates_display) %}
-    {% endif %}
-    {% if show.countries_emoji|length > 0 %}
-        {% do show_meta.append(show.countries_emoji|join(' ')) %}
-    {% endif %}
-
-    {% if show_meta|length > 0 or show.networks|length > 0 %}
+    {% if showMeta is not empty or show.Networks is not empty %}
         <div class="well--centered">
-            {% if show_meta|length > 0 %}
-                <span class="well__text">{{ show_meta|join(' ') }}</span>
+            {% if showMeta is not empty %}
+                <span class="well__text">{{ showMeta }}</span>
             {% endif %}
 
-            {% if show.networks|length > 0 %}
+            {% if show.Networks is not empty %}
                 <ul class="l-show-detail__networks">
-                    {% for network in show.networks %}
+                    {% for network in show.Networks %}
                         <li>
-                            {% if network.logo is not none %}
+                            {% if network.Logo is not empty %}
                                 <img
-                                    src="{{ network.logo.default }}"
+                                    src="{{ network.Logo }}"
                                     height="20"
-                                    alt="{{ network.name }}"
+                                    alt="{{ network.Name }}"
                                 >
                             {% else %}
-                                <span>{{ network.name }}</span>
+                                <span>{{ network.Name }}</span>
                             {% endif %}
                         </li>
                     {% endfor %}
@@ -77,7 +69,7 @@
 
     <div class="well">
         <ul class="icon-list">
-            {% if show.has_ended %}
+            {% if show.HasEnded %}
                 <li class="icon-list__item">
                     <span class="roundel-icon red icon-list__item-icon">
                         {{ icon('stop-circle', 'roundel-icon__icon') }}
@@ -92,42 +84,35 @@
                     {{ icon('calendar', 'roundel-icon__icon') }}
                 </span>
                 <div class="icon-list__item-body">
-                    <p class="icon-list__item-text">{{ show.status_text|replace('|start_strong|', '<strong>')|replace('|end_strong|', '</strong>')|safe() }}</p>
+                    <p class="icon-list__item-text">{{ show.StatusText|replace('|start_strong|', '<strong>')|replace('|end_strong|', '</strong>')|safe() }}</p>
                 </div>
             </li>
         </ul>
     </div>
 
-    {% if show.overview is not none %}
+    {% if show.Overview is not none %}
         <h2 class="l-show-detail__section-title">Overview</h2>
 
         <div class="well">
-            <p class="well__text">{{ show.overview }}</p>
+            <p class="well__text">{{ show.Overview }}</p>
         </div>
     {% endif %}
 
-    {% if show.seasons|length > 0 %}
+    {% if show.Seasons is not empty %}
         <h2 class="l-show-detail__section-title">Episodes</h2>
 
-        {% for season in show.seasons %}
-            <details class="well--collapsable l-show-detail__season"{% if season.episodes is not none %} open{% endif %}>
+        {% for season in show.Seasons %}
+            <details class="well--collapsable l-show-detail__season"{% if season.Episodes is not empty %} open{% endif %}>
                 <summary class="well__header">
-                    <h3 class="well__title">{{ season.name }}{% if season.name != 'Specials' and season.year is not none %} ({{ season.year }}){% endif %}</h3>
-                    <p class="well__description">{{ season.episode_count }} episode{% if season.episode_count != 1 %}s{% endif %}</p>
+                    <h3 class="well__title">{{ season.Name }}{% if season.Name != 'Specials' and season.Year is not none %} ({{ season.Year }}){% endif %}</h3>
+                    <p class="well__description">{{ season.EpisodeCount }} episode{% if season.EpisodeCount != 1 %}s{% endif %}</p>
                     {{ icon('chevron-down', 'well__disclosure-icon') }}
                 </summary>
 
-                {% if season.episodes is not none %}
+                {% if season.Episodes is not empty %}
                     {% include 'show/_season_episodes.html' %}
                 {% else %}
-                    {% set episodes_route = route(
-                        'api.app.season_episodes.get',
-                        {
-                            'show_id': show.tmdb_id,
-                            'season_number': season.season_number,
-                        },
-                        absolute=False
-                    ) %}
+                    {% set episodes_route = route('api.app.season_episodes.get', {'show_id': show.TmdbId, 'season_number': season.SeasonNumber}) %}
                     <lazy-details src="{{ episodes_route }}" aria-live="polite" aria-busy="false">
                         {% set loading_text = 'Hang tight, we’re fetching those episodes…' %}
                         {% include '_loading_notice.html' with context %}

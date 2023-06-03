@@ -91,7 +91,7 @@ func (suite *ShowSearchTestSuite) TestSearch() {
     }
     show4Slug := "looteri-dulhan"
 
-    suite.tmdbClient.On("SearchShows", searchToken, 1).Return(apiResults)
+    suite.tmdbClient.On("SearchShows", searchToken, 1).Return(apiResults, nil)
     suite.slugGenerator.On("Generate", apiShows[0].Name, 0).Return(show1Slug)
     suite.showImageFormatter.On("Format", suite.ctx, "poster", *apiShows[0].PosterPath, "").Return(show1PosterImage)
     suite.slugGenerator.On("Generate", apiShows[1].Name, 0).Return(show2Slug)

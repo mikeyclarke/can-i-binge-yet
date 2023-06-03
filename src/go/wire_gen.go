@@ -10,11 +10,14 @@ import (
 	"fmt"
 	cache2 "github.com/go-redis/cache/v8"
 	"github.com/go-redis/redis/v8"
+	"github.com/google/wire"
+	controllers2 "github.com/mikeyclarke/can-i-binge-yet/src/go/api/app/controllers"
 	"github.com/mikeyclarke/can-i-binge-yet/src/go/asset"
 	"github.com/mikeyclarke/can-i-binge-yet/src/go/cache"
 	"github.com/mikeyclarke/can-i-binge-yet/src/go/config"
 	"github.com/mikeyclarke/can-i-binge-yet/src/go/file"
 	"github.com/mikeyclarke/can-i-binge-yet/src/go/front_end/app/controllers"
+	"github.com/mikeyclarke/can-i-binge-yet/src/go/front_end/app/middleware"
 	"github.com/mikeyclarke/can-i-binge-yet/src/go/id_generator"
 	"github.com/mikeyclarke/can-i-binge-yet/src/go/show"
 	"github.com/mikeyclarke/can-i-binge-yet/src/go/template"
@@ -34,17 +37,62 @@ func CreateHomeController() *controllers.HomeController {
 	redisPort := applicationConfig.RedisPort
 	redisPassword := applicationConfig.RedisPassword
 	cacheCache := NewRedisCache(redisHost, redisPort, redisPassword)
+	cache2 := cache.NewCache(cacheCache)
 	tmdbApiKey := applicationConfig.TmdbApiKey
 	tmdbApiBaseUrl := applicationConfig.TmdbApiBaseUrl
 	theMovieDbClient := themoviedb.NewTheMovieDbClient(tmdbApiKey, tmdbApiBaseUrl)
-	theMovieDbConfiguration := themoviedb.NewTheMovieDbConfiguration(cacheCache, theMovieDbClient)
+	theMovieDbConfiguration := themoviedb.NewTheMovieDbConfiguration(cache2, theMovieDbClient)
 	showImageFormatter := show.NewShowImageFormatter(theMovieDbConfiguration)
 	slugGenerator := url.NewSlugGenerator()
 	showSearch := show.NewShowSearch(showImageFormatter, slugGenerator, theMovieDbClient)
-	cache2 := cache.NewCache(cacheCache)
 	trendingShows := show.NewTrendingShows(cache2, showImageFormatter, slugGenerator, theMovieDbClient)
 	homeController := controllers.NewHomeController(showSearch, trendingShows)
 	return homeController
+}
+
+func CreateShowController() *controllers.ShowController {
+	showController := controllers.NewShowController()
+	return showController
+}
+
+func CreateSeasonEpisodesController() *controllers2.SeasonEpisodesController {
+	seasonEpisodesFormatter := show.NewSeasonEpisodesFormatter()
+	applicationConfig := config.NewApplicationConfig()
+	tmdbApiKey := applicationConfig.TmdbApiKey
+	tmdbApiBaseUrl := applicationConfig.TmdbApiBaseUrl
+	theMovieDbClient := themoviedb.NewTheMovieDbClient(tmdbApiKey, tmdbApiBaseUrl)
+	seasonEpisodesLoader := show.NewSeasonEpisodesLoader(seasonEpisodesFormatter, theMovieDbClient)
+	assetDirectory := applicationConfig.AssetDirectory
+	assetManifestPath := applicationConfig.AssetManifestPath
+	assetManifest := asset.NewAssetManifest(assetManifestPath)
+	fileReader := file.NewFileReader()
+	alphanumericIdGenerator := id_generator.NewAlphanumericIdGenerator()
+	assetRenderer := asset.NewAssetRenderer(assetDirectory, assetManifest, fileReader, alphanumericIdGenerator)
+	templatesDirectory := applicationConfig.TemplatesDirectory
+	environment := NewGonjaEnvironment(templatesDirectory)
+	templateRenderer := template.NewTemplateRenderer(applicationConfig, assetRenderer, environment, templatesDirectory)
+	seasonEpisodesController := controllers2.NewSeasonEpisodesController(seasonEpisodesLoader, templateRenderer)
+	return seasonEpisodesController
+}
+
+func CreateShowLoaderMiddleware() *middleware.ShowLoaderMiddleware {
+	seasonEpisodesFormatter := show.NewSeasonEpisodesFormatter()
+	applicationConfig := config.NewApplicationConfig()
+	redisHost := applicationConfig.RedisHost
+	redisPort := applicationConfig.RedisPort
+	redisPassword := applicationConfig.RedisPassword
+	cacheCache := NewRedisCache(redisHost, redisPort, redisPassword)
+	cache2 := cache.NewCache(cacheCache)
+	tmdbApiKey := applicationConfig.TmdbApiKey
+	tmdbApiBaseUrl := applicationConfig.TmdbApiBaseUrl
+	theMovieDbClient := themoviedb.NewTheMovieDbClient(tmdbApiKey, tmdbApiBaseUrl)
+	theMovieDbConfiguration := themoviedb.NewTheMovieDbConfiguration(cache2, theMovieDbClient)
+	showImageFormatter := show.NewShowImageFormatter(theMovieDbConfiguration)
+	slugGenerator := url.NewSlugGenerator()
+	showPageFormatter := show.NewShowPageFormatter(seasonEpisodesFormatter, showImageFormatter, slugGenerator)
+	showLoader := show.NewShowLoader(showPageFormatter, theMovieDbClient)
+	showLoaderMiddleware := middleware.NewShowLoaderMiddleware(showLoader)
+	return showLoaderMiddleware
 }
 
 func CreateTemplateRenderer() *template.TemplateRenderer {
@@ -68,6 +116,10 @@ func NewGonjaEnvironment(rootDir config.TemplatesDirectory) *gonja.Environment {
 	environment := gonja.NewEnvironment(config2.DefaultConfig, loader)
 	evalLoader := template.NewGonjaCachedEvalTemplateLoader(environment)
 	environment.EvalConfig.Loader = evalLoader
+	for name, filterFunc := range template.Filters {
+		environment.Filters.Register(name, filterFunc)
+	}
+	environment.Globals.Merge(template.Functions)
 	return environment
 }
 
@@ -82,3 +134,24 @@ func NewRedisCache(host config.RedisHost, port config.RedisPort, pw config.Redis
 	})
 	return cache3
 }
+
+var ConfigSet = wire.NewSet(config.NewApplicationConfig, wire.FieldsOf(
+	new(config.ApplicationConfig),
+	"AssetDirectory",
+	"AssetManifestPath",
+	"RedisHost",
+	"RedisPort",
+	"RedisPassword",
+	"TemplatesDirectory",
+	"TmdbApiBaseUrl",
+	"TmdbApiKey",
+),
+)
+
+var CacheSet = wire.NewSet(
+	NewRedisCache, wire.Bind(new(cache.CacheInterface), new(*cache.Cache)), cache.NewCache,
+)
+
+var TemplateRendererSet = wire.NewSet(
+	NewGonjaEnvironment, wire.Bind(new(asset.AssetManifestInterface), new(*asset.AssetManifest)), asset.NewAssetManifest, asset.NewAssetRenderer, wire.Bind(new(file.FileReaderInterface), new(*file.FileReader)), file.NewFileReader, wire.Bind(new(id_generator.AlphanumericIdGeneratorInterface), new(*id_generator.AlphanumericIdGenerator)), id_generator.NewAlphanumericIdGenerator, template.NewTemplateRenderer,
+)

@@ -2,8 +2,8 @@
     {% if backdrop_image is not none %}
         <img
             class="backdrop{% if className is not none %} {{ className }}{% endif %}"
-            src="{{ backdrop_image.default }}"
-            srcset="{{ backdrop_image.srcset }}"
+            src="{{ backdrop_image.Default }}"
+            srcset="{{ backdrop_image.Srcset }}"
             sizes="{{ sizes }}"
             alt="{% if alt is not none %}{{ alt }}{% endif %}"
         >

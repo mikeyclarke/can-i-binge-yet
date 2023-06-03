@@ -7,6 +7,7 @@ import (
     "io/fs"
     "log"
     "path/filepath"
+    "strings"
 
     "github.com/nikolalohinski/gonja"
     "github.com/nikolalohinski/gonja/exec"
@@ -48,13 +49,14 @@ func (templateRenderer *TemplateRenderer) Load() error {
             return err
         }
 
-        _, cErr := templateRenderer.gonjaEnvironment.FromCache(relPath)
-        if cErr != nil {
-            return cErr
+        if strings.HasSuffix(relPath, ".swp") {
+            return nil
         }
 
-        if templateRenderer.gonjaEnvironment.Config.Debug {
-            fmt.Printf("Template renderer: cached template: %s", relPath)
+        _, cErr := templateRenderer.gonjaEnvironment.FromCache(relPath)
+        if cErr != nil {
+            log.Printf("Failed to cache template %s", relPath)
+            return cErr
         }
 
         return err
@@ -68,20 +70,57 @@ func (templateRenderer *TemplateRenderer) Render(writer io.Writer, name string, 
         return err
     }
 
+    viewContext, err := templateRenderer.populateViewContext(data)
+    if err != nil {
+        return err
+    }
+
+    result, err := template.ExecuteBytes(viewContext)
+    if err != nil {
+        log.Fatal(err)
+        return err
+    }
+
+    writer.Write(result)
+
+    return nil
+}
+
+func (templateRenderer *TemplateRenderer) RenderToString(name string, data interface{}) (string, error) {
+    template, err := templateRenderer.gonjaEnvironment.FromCache(name)
+    if err != nil {
+        return "", err
+    }
+
+    viewContext, err := templateRenderer.populateViewContext(data)
+    if err != nil {
+        return "", err
+    }
+
+    result, err := template.Execute(viewContext)
+    if err != nil {
+        log.Fatal(err)
+        return result, err
+    }
+
+    return result, nil
+}
+
+func (templateRenderer *TemplateRenderer) populateViewContext(data interface{}) (map[string]interface{}, error) {
     viewContext, isMap := data.(map[string]interface{})
     if !isMap {
-        return errors.New("jinja view data must be a map")
+        return viewContext, errors.New("jinja view data must be a map")
     }
 
     message := "fiber.Ctx not found in template context"
     _, exists := viewContext["ctx"]
     if !exists {
-        return errors.New(message)
+        return viewContext, errors.New(message)
     }
 
     ctx, ok := viewContext["ctx"].(*fiber.Ctx)
     if !ok {
-        return errors.New(message)
+        return viewContext, errors.New(message)
     }
 
     viewContext["request_context"] = ctx
@@ -94,13 +133,21 @@ func (templateRenderer *TemplateRenderer) Render(writer io.Writer, name string, 
     }
     viewContext["route"] = func(va *exec.VarArgs) *exec.Value {
         routeName := va.Args[0].String()
-        var routeParameters map[string]interface{}
+        routeParameters := make(map[string]interface{})
         if len(va.Args) == 2 {
-            rp, ok := va.Args[1].Interface().(map[string]interface{})
-            if !ok {
+            if !va.Args[1].IsDict() {
                 return exec.AsValue(errors.New("route parameters must be a map"))
             }
-            routeParameters = rp
+
+            dict, ok := va.Args[1].Interface().(*exec.Dict)
+            if ok {
+                for _, key := range dict.Keys() {
+                    strKey, strOk := key.Interface().(string)
+                    if strOk {
+                        routeParameters[strKey] = dict.Get(key).Interface()
+                    }
+                }
+            }
         }
         result, err := ctx.GetRouteURL(routeName, fiber.Map(routeParameters))
         if err != nil {
@@ -134,14 +181,5 @@ func (templateRenderer *TemplateRenderer) Render(writer io.Writer, name string, 
     }
     viewContext["config"] = templateRenderer.applicationConfig
 
-    result, err := template.ExecuteBytes(viewContext)
-
-    if err != nil {
-        log.Fatal(err)
-        return err
-    }
-
-    writer.Write(result)
-
-    return nil
+    return viewContext, nil
 }

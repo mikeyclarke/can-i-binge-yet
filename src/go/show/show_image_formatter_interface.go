@@ -11,4 +11,5 @@ type ShowImageResult struct {
 
 type ShowImageFormatterInterface interface {
     Format(ctx context.Context, imageType string, imagePath string, defaultSize string) ShowImageResult
+    FormatUrl(ctx context.Context, imagePath string, size string) string
 }
