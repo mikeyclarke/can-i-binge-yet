@@ -1,9 +1,0 @@
-from .. import Middleware as Middleware
-from ...request import Request
-from ...response import Response
-
-class IpMiddleware(Middleware):
-    headers: list[str]
-    def get_ip(self, request: Request) -> str: ...
-    def before(self, request: Request, response: Response) -> Request: ...
-    def after(self, request: Request, response: Response) -> Request: ...

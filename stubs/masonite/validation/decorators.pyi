@@ -1,3 +1,0 @@
-from _typeshed import Incomplete
-
-def validate(*rules, redirect: Incomplete | None = ..., back: Incomplete | None = ...): ...

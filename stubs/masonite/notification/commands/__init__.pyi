@@ -1,2 +1,0 @@
-from .MakeNotificationCommand import MakeNotificationCommand as MakeNotificationCommand
-from .NotificationTableCommand import NotificationTableCommand as NotificationTableCommand

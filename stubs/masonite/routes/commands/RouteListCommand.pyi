@@ -1,9 +1,0 @@
-from ...foundation.Application import Application
-from ..HTTPRoute import HTTPRoute
-from cleo import Command # type: ignore
-
-class RouteListCommand(Command):
-    app: Application
-    def __init__(self, application: Application) -> None: ...
-    def handle(self) -> None: ...
-    def format_route_as_row(self, route: HTTPRoute) -> list[str]: ...

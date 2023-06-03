@@ -4,19 +4,10 @@ const WebpackAssetsManifest = require('webpack-assets-manifest');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const fs = require('fs');
+const YAML = require('yaml');
 
-const applicationConfig = fs.readFileSync('./config/application.py', 'utf8');
-const appConfigLines = applicationConfig.split(/\r?\n/);
-
-let snowfall = false;
-appConfigLines.forEach((line) => {
-    if (line.startsWith('SNOWFALL')) {
-        const value = line.match(/SNOWFALL\s=\s([A-Za-z]+)$/);
-        if (null !== value) {
-            snowfall = (value[1].toLowerCase() === 'true') ? true : false;
-        }
-    }
-});
+const applicationConfig = YAML.parse(fs.readFileSync('./config/config.yaml', 'utf8'));
+const snowfall = applicationConfig.snowfall;
 
 module.exports = {
     entry: {

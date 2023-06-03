@@ -1,9 +1,0 @@
-from ..foundation.Application import Application
-from .exceptions import DumpException as DumpException
-from typing import Any
-
-class DD:
-    app: Application
-    def __init__(self, container: Application) -> None: ...
-    def die_and_dump(self, *args: Any) -> None: ...
-    def dump(self, *args: Any) -> None: ...

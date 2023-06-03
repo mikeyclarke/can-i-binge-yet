@@ -2,8 +2,6 @@ public/compiled
 public/service-worker.js
 
 .env
-.env.*
-!.env.testing
 
 **/*.DS_Store
 

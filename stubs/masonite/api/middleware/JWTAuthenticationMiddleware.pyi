@@ -1,6 +1,0 @@
-from masonite.api.facades import Api as Api
-from masonite.middleware import Middleware as Middleware
-
-class JWTAuthenticationMiddleware(Middleware):
-    def before(self, request, response): ...
-    def after(self, request, response) -> None: ...

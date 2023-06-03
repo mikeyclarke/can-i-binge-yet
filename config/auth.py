@@ -1,4 +1,0 @@
-GUARDS = {
-    'default': 'web',
-    'web': {},
-}

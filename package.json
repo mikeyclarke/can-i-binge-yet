@@ -18,7 +18,8 @@
     "webpack-assets-manifest": "^5.1",
     "webpack-cli": "^5.0",
     "webpack-merge": "^5.8",
-    "whatwg-fetch": "^3.6.2"
+    "whatwg-fetch": "^3.6.2",
+    "yaml": "^2.3"
   },
   "dependencies": {
     "jest-environment-jsdom": "^29.5.0",

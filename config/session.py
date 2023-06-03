@@ -1,4 +1,0 @@
-DRIVERS = {
-    'default': 'cookie',
-    'cookie': {},
-}

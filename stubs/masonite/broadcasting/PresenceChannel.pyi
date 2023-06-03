@@ -1,6 +1,0 @@
-from masonite.foundation import Application
-
-class PresenceChannel:
-    name: str
-    def __init__(self, name: str) -> None: ...
-    def authorized(self, application: Application) -> bool: ...

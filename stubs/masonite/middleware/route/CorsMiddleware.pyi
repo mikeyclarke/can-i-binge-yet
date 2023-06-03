@@ -1,9 +1,0 @@
-from ...request.request import Request
-from ...response.response import Response
-from ...cors.Cors import Cors
-
-class CorsMiddleware:
-    headers: dict[str, str]
-    def before(self, request: Request, response: Response) -> Response: ...
-    def after(self, request: Request, response: Response) -> Response: ...
-    def match_paths(self, request: Request, cors: Cors) -> bool: ...

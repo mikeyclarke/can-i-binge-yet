@@ -1,9 +1,0 @@
-from .BaseDriver import BaseDriver as BaseDriver
-from _typeshed import Incomplete
-
-class MailDriver(BaseDriver):
-    application: Incomplete
-    options: Incomplete
-    def __init__(self, application) -> None: ...
-    def set_options(self, options): ...
-    def send(self, notifiable, notification): ...

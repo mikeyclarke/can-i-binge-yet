@@ -1,2 +1,0 @@
-from .MakeEventCommand import MakeEventCommand as MakeEventCommand
-from .MakeListenerCommand import MakeListenerCommand as MakeListenerCommand

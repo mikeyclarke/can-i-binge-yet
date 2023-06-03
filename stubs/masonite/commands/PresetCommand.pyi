@@ -1,9 +1,0 @@
-from ..foundation.Application import Application
-from ..presets import Remove as Remove
-from .Command import Command as Command
-
-class PresetCommand(Command):
-    app: Application
-    def __init__(self, application: Application) -> None: ...
-    def handle(self) -> None: ...
-    def remove(self) -> None: ...
