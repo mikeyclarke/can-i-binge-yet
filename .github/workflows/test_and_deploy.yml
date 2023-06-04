@@ -1,5 +1,4 @@
-#name: Test and Deploy
-name: Test
+name: Test and Deploy
 
 on: [push]
 
@@ -58,28 +57,28 @@ jobs:
       - name: Run TypeScript unit tests
         run: yarn run jest
 
-          #  deploy:
-          #    name: Deploy
-          #    if: github.ref == 'refs/heads/master'
-          #    needs: ['test_python', 'test_typescript']
-          #    runs-on: ubuntu-latest
-          #
-          #    steps:
-          #      - uses: actions/checkout@v3
-          #
-          #      - name: Setup node
-          #        uses: actions/setup-node@v3
-          #        with:
-          #          node-version: ${{ matrix.node-versions }}
-          #          cache: 'yarn'
-          #
-          #      - name: Install yarn packages
-          #        run: yarn install --immutable
-          #
-          #      - name: Build assets
-          #        run: yarn run webpack --config webpack.production.js
-          #
-          #      - uses: superfly/flyctl-actions/setup-flyctl@master
-          #
-          #      - name: Deploy to fly.io
-          #        run: flyctl deploy --remote-only --ignorefile .dockerignore.production
+  deploy:
+    name: Deploy
+    if: github.ref == 'refs/heads/master'
+    needs: ['test_go', 'test_typescript']
+    runs-on: ubuntu-latest
+  
+    steps:
+      - uses: actions/checkout@v3
+  
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-versions }}
+          cache: 'yarn'
+  
+      - name: Install yarn packages
+        run: yarn install --immutable
+  
+      - name: Build assets
+        run: yarn run webpack --config webpack.production.js
+  
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+  
+      - name: Deploy to fly.io
+        run: flyctl deploy --remote-only --ignorefile .dockerignore.production
