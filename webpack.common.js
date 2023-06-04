@@ -43,10 +43,12 @@ module.exports = {
                         const chunk = entry.getEntrypointChunk();
                         chunk.files.forEach((file) => {
                             const from = outputPath + '/' + file;
-                            const to = path.resolve(__dirname, 'public') + '/' + file.split('/').at(-1);
-                            fs.copyFile(from, to, (err) => {
-                                if (err) throw err;
-                            });
+                            if (fs.existsSync(from)) {
+                                const to = path.resolve(__dirname, 'public') + '/' + file.split('/').at(-1);
+                                fs.copyFile(from, to, (err) => {
+                                    if (err) throw err;
+                                });
+                            }
                         });
                     }
                 });
