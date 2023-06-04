@@ -4,6 +4,7 @@ services:
     build:
       context: ./
       dockerfile: ./docker/go/Dockerfile
+      target: development
     depends_on:
       - redis
     ports:

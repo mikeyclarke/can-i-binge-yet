@@ -6,14 +6,11 @@ kill_timeout = 5
 processes = []
 
 [build]
-  dockerfile = "docker/python/Dockerfile"
+  dockerfile = "docker/go/Dockerfile"
+  build-target = "production"
 
 [env]
-  APP_DEBUG = "false"
   APP_ENV = "production"
-  APP_URL = "https://can-i-binge-yet.fly.dev"
-  HASHING_FUNCTION = "bcrypt"
-  MAIL_DRIVER = "terminal"
   REDIS_HOST = "fly-ciby.upstash.io"
   REDIS_PORT = 6379
 
