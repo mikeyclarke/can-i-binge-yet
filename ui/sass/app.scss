@@ -13,6 +13,7 @@ $snowfall: true !default;
 @use 'elements/roundel-icon';
 
 @use 'layouts/homepage';
+@use 'layouts/errorpage';
 @use 'layouts/show-detail';
 @use 'layouts/search-results' as l-search-results;
 

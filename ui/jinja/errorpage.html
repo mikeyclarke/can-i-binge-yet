@@ -1,0 +1,21 @@
+{% extends 'base_layout.html' %}
+
+{% block body_element_attributes %}class="l-errorpage"{% endblock %}
+
+{% block content %}
+
+<div class="l-errorpage__top-bar">
+    {% include '_top_bar.html' %}
+</div>
+
+{% set message = code == 404|ifelse('Page Not Found', 'Something Went Wrong') %}
+{% set code_display = code == 404|ifelse('404', '500 Error') %}
+
+<div class="l-errorpage__main">
+    <h1 class="l-errorpage__title">{{ message }}</h1>
+    <a class="l-errorpage__escape-hatch" href="/">Take me home</a>
+</div>
+
+<span class="l-errorpage__errcode">{{ code_display }}</span>
+
+{% endblock %}
