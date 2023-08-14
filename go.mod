@@ -1,6 +1,6 @@
 module github.com/mikeyclarke/can-i-binge-yet
 
-go 1.20
+go 1.21
 
 require (
 	github.com/enescakir/emoji v1.0.0
