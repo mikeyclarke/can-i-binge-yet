@@ -80,6 +80,12 @@ add_yarn_package: ## Add a yarn package
 add_yarn_dev_package: ## Add a yarn package
 	docker compose run --rm node yarn add --dev $(PACKAGE)
 
+list_outdated_go_packages: ## List outdated golang dependencies
+	docker exec -it ciby-go sh -c "go list -u -m -json all | go-mod-outdated -update -direct"
+
+update_go_packages: ## Update all golang dependencies to their latest minor version
+	docker exec -it ciby-go go get -u ./...
+
 ## ---------
 ##	Dependency injection
 ## ---------
