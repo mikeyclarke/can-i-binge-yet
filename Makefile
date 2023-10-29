@@ -44,7 +44,7 @@ test_ts: jest ## Run all TypeScript code tests
 ##	Linting
 ## ---------
 
-lint_go: staticcheck vet
+lint_go: staticcheck vet ## Run go code quality checks
 
 ## ---------
 ##	Coding standards
@@ -114,7 +114,7 @@ deploy:
 	fly deploy --ignorefile .dockerignore.production
 
 ## ---------
-##	Make setup
+#@	Make setup
 ## ---------
 
 _PHONY: help
@@ -122,4 +122,4 @@ _PHONY: help
 .DEFAULT_GOAL := help
 
 help:
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(THIS_FILE) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-30s\033[0m %s\n", $$1, $$2 } /^##[[:blank:]]{1,2}[a-zA-Z0-9]+/ { str = $$0; sub(/^##[[:blank:]]{1,2}/, "", str); printf "\n\033[34m%s\033[0m\n", str } ' $(MAKEFILE_LIST)
