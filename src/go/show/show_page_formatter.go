@@ -264,7 +264,7 @@ func (showPageFormatter *ShowPageFormatter) formatFriendlyDate(p *message.Printe
     result := p.Sprintf(pattern, airDate.Weekday(), airDate.Month(), airDate.Day())
 
     if airDate.Year() != today.Year() {
-        result += p.Sprintf(" %d", airDate.Year())
+        result += p.Sprintf(" %s", strconv.Itoa(airDate.Year()))
     }
 
     return result
