@@ -30,7 +30,7 @@ self.addEventListener('fetch', async (event: FetchEvent) => {
     const request = event.request;
     const cachedAssetsCatalog = new CachedAssetsCatalog();
 
-    if (await cachedAssetsCatalog.isAvailable() && isNavigationRequest(request)) {
+    if (isNavigationRequest(request)) {
         event.respondWith(upgradeRequest(cachedAssetsCatalog, request));
         return;
     }
