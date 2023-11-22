@@ -1,6 +1,6 @@
 asset_directory: "public"
 asset_manifest_path: "public/compiled/manifest.json"
 search_input_placeholder_example: "Stranger Things"
-snowfall: false
+snowfall: true
 templates_directory: "ui/jinja"
 tmdb_api_base_url: "https://api.themoviedb.org"
